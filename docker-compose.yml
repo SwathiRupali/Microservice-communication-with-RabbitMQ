@@ -1,0 +1,98 @@
+version: '3.9'
+
+services:
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: Rabbitmq
+    restart: on-failure
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+    expose:
+      - "15672"
+      - "5672"
+    networks:
+      - rabbitmq_net
+
+  producer:
+    build: ./producer
+    container_name: Producer
+    restart: on-failure
+    ports:
+      - "5050:5050"
+    expose:
+      - "5050"
+    networks:
+      - microservices_net
+      - rabbitmq_net
+    depends_on:
+      - rabbitmq
+
+  consumer_one:
+    build: ./consumer_one
+    container_name: Consumer-1
+    restart: on-failure
+    networks:
+      - microservices_net
+      - rabbitmq_net
+    depends_on:
+      - rabbitmq
+
+  consumer_two:
+    build: ./consumer_two
+    container_name: Consumer-2
+    restart: on-failure
+    networks:
+      - microservices_net
+      - rabbitmq_net
+    depends_on:
+      - rabbitmq
+      
+    environment:
+      MONGO_URI: mongodb://host.docker.internal:27017/mydatabase
+
+  consumer_three:
+    build: ./consumer_three
+    container_name: Consumer-3
+    restart: on-failure
+    networks:
+      - microservices_net
+      - rabbitmq_net
+    depends_on:
+      - rabbitmq
+      
+    environment:
+      MONGO_URI: mongodb://host.docker.internal:27017/mydatabase
+
+  consumer_four:
+    build: ./consumer_four
+    container_name: Consumer-4
+    restart: on-failure
+    networks:
+      - microservices_net
+      - rabbitmq_net
+    depends_on:
+      - rabbitmq
+      
+    environment:
+      MONGO_URI: mongodb://host.docker.internal:27017/mydatabase
+
+  # mongodb:
+  #   image: mongo
+  #   container_name: MongoDB
+  #   restart: on-failure
+  #   ports:
+  #     - "27017:27017"
+  #   expose:
+  #     - "27017"
+  #   networks:
+  #     - microservices_net
+  #   depends_on:
+  #     - rabbitmq
+  #     - producer
+
+networks:
+  microservices_net:
+   driver: bridge
+  rabbitmq_net:
+    driver: bridge
