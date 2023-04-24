@@ -77,19 +77,6 @@ services:
     environment:
       MONGO_URI: mongodb://host.docker.internal:27017/mydatabase
 
-  # mongodb:
-  #   image: mongo
-  #   container_name: MongoDB
-  #   restart: on-failure
-  #   ports:
-  #     - "27017:27017"
-  #   expose:
-  #     - "27017"
-  #   networks:
-  #     - microservices_net
-  #   depends_on:
-  #     - rabbitmq
-  #     - producer
 
 networks:
   microservices_net:

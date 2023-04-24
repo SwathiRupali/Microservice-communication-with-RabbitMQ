@@ -7,11 +7,11 @@ connection = pika.BlockingConnection(pika.ConnectionParameters(host='rabbitmq'))
 channel = connection.channel()
 
 # Declare exchange and queue
-exchange_name = 'message_exchange'
-delete_record_queue = 'delete_record'
-channel.exchange_declare(exchange=exchange_name, exchange_type='direct')
-channel.queue_declare(queue=delete_record_queue)
-channel.queue_bind(exchange=exchange_name, queue=delete_record_queue, routing_key=delete_record_queue)
+# exchange_name = 'delete'
+# delete_record_queue = 'delete_record'
+channel.exchange_declare(exchange='delete', exchange_type='direct')
+channel.queue_declare(queue='delete_record')
+channel.queue_bind(exchange='delete', queue='delete_record', routing_key='delete_record')
 
 # Connect to MongoDB
 client = pymongo.MongoClient("mongodb://host.docker.internal:27017")
@@ -26,7 +26,7 @@ def callback(ch, method, properties, body):
     channel.basic_ack(delivery_tag=method.delivery_tag)
 
 # Consume messages from queue
-channel.basic_consume(queue=delete_record_queue, on_message_callback=callback)
+channel.basic_consume(queue='delete_record', on_message_callback=callback)
 
 # Start consuming
 channel.start_consuming()

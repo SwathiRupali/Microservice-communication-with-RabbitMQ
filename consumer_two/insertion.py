@@ -7,11 +7,11 @@ connection = pika.BlockingConnection(pika.ConnectionParameters(host='rabbitmq'))
 channel = connection.channel()
 
 # Declare exchange and queue
-exchange_name = 'message_exchange'
-insert_record_queue = 'insert_record'
-channel.exchange_declare(exchange=exchange_name, exchange_type='direct')
-channel.queue_declare(queue=insert_record_queue)
-channel.queue_bind(exchange=exchange_name, queue=insert_record_queue, routing_key=insert_record_queue)
+# exchange_name = 'insert'
+# insert_record_queue = 'insert_record'
+channel.exchange_declare(exchange='insert', exchange_type='direct')
+channel.queue_declare(queue='insert_record')
+channel.queue_bind(exchange='insert', queue='insert_record', routing_key='insert_record')
 
 # Connect to MongoDB
 client =  pymongo.MongoClient("mongodb://host.docker.internal:27017")
@@ -26,7 +26,7 @@ def callback(ch, method, properties, body):
     ch.basic_ack(delivery_tag=method.delivery_tag)
 
 # Consume messages from queue
-channel.basic_consume(queue=insert_record_queue, on_message_callback=callback)
+channel.basic_consume(queue='insert_record', on_message_callback=callback)
 
 # Start consuming messages
 channel.start_consuming()
